@@ -1,0 +1,14 @@
+{
+  "name": "tiyuzazhi_bk",
+  "version": "0.0.1",
+  "description": "backend of tiyuzazhi system.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tiyuzazhi"
+  ],
+  "author": "chris.xue",
+  "license": "APACHE"
+}
