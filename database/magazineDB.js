@@ -16,8 +16,8 @@ magazineDB.listPeriodical = function (callback) {
  * @param callback
  */
 magazineDB.listMagazines = function (callback) {
-    database.query('select b.id as id, a.name as name, a.name_en as subTitle, b.name as publishNo,' +
-        ' (b.publshDate) as publishDate' +
+    database.query('select b.id as id, a.name as title, a.name_en as subTitle, b.name as publishNo,' +
+        ' (b.publshDate) as publishTime' +
         ' from periodical a, issue b' +
         ' where a.id = b.periodicalId and b.id in (' +
         ' select max(id)' +
@@ -30,10 +30,10 @@ magazineDB.listMagazines = function (callback) {
  * @param callback
  */
 magazineDB.listArticles = function (id, callback) {
-    database.query('select a.id, a.name as title, a.creationdate as \'datetime\'' +
+    database.query('select a.id, a.name as title, a.creationdate as publishTime' +
         ' from article a, issue b' +
         ' where a.issueId = b.id and b.id=\'' + id + "\'" +
-        ' order by creationdate desc', callback);
+        ' order by a.creationdate desc', callback);
 };
 
 /**
@@ -58,6 +58,20 @@ magazineDB.getPreviousMagazineId = function (id, callback) {
         ' from issue' +
         ' where id < \'' + id + '\' and periodicalId in' +
         ' (select periodicalId from issue where id = \'' + id + '\') order by id desc', callback);
+};
+
+/**
+ * get periodical by id;
+ * @param id
+ * @param callback
+ */
+magazineDB.getMagazine = function (id, callback) {
+    database.query('select b.id as id, a.name as title, a.name_en as subTitle, b.name as publishNo,' +
+        ' (b.publshDate) as publishTime' +
+        ' from periodical a, issue b' +
+        ' where a.id = b.periodicalId and b.id in (' +
+        id +
+        ')', callback);
 };
 
 module.exports = magazineDB;

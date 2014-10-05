@@ -5,13 +5,16 @@ var config;
 if (app.get('env') === 'development') {
     config = {
         user: 'tiyukeji',
-        password: '',
-        server: 'localhost',
+        password: 'tiyukeji',
+        server: '192.168.10.109',
         database: 'tiyukeji',
         pool: {
             max: 10,
             min: 1,
             idleTimeoutMillis: 30000
+        },
+        options: {
+            tdsVersion: '7_1'
         }
     }
 } else {
@@ -24,6 +27,9 @@ if (app.get('env') === 'development') {
             max: 10,
             min: 1,
             idleTimeoutMillis: 30000
+        },
+        options: {
+            tdsVersion: '7_1'
         }
     }
 }

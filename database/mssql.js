@@ -11,6 +11,11 @@ var getConn = function (callback) {
     var conn = new mssql.Connection(config, function (err) {
         callback(conn, mssql, err);
     });
+    conn.on("error", function(err) {
+        console.log('Error');
+        console.error(err.stack);
+        console.log(err);
+    });
     return conn;
 };
 
