@@ -9,7 +9,7 @@ if (app.get('env') === 'development') {
         server: '192.168.10.109',
         database: 'tiyukeji',
         pool: {
-            max: 10,
+            max: 1,
             min: 1,
             idleTimeoutMillis: 30000
         },
