@@ -76,26 +76,31 @@ magazineDB.getMagazine = function (id, callback) {
 };
 
 magazineDB.search = function (keywords, index, callback) {
-    if (!index || index == 0) {
-        index = 10;
+    if (!index) {
+        index = 0;
     }
-    database.query('select top 10 * from (select top ' + index + 'select a.id, a.name as title, a.creationdate as publishTime, a.author' +
-        ' from article a, issue b' +
-        ' where a.issueId = b.id and (' + buildSearchQuery(keywords) + ')' +
-        ' order by a.id asc) m order by id desc', callback);
+    var sql = 'select top 10 id, name as title, creationdate as publishTime, author from article where id not in (select top ' + index + ' id' +
+        ' from article a' +
+        ' where ' + buildSearchQuery(keywords, true) + ' order by id asc) and (' + buildSearchQuery(keywords, false) + ') order by id asc';
+    console.log("sql => " + sql);
+    database.query(sql, callback);
 }
 
-var buildSearchQuery = function (keywords) {
-    var query = "a.name like '%" + keywords + "%'";
-    if (validator.isNumeric(keywords)) {
-        query += " or a.id = " + keywords;
-    } else {
-        query += " or a.author like '%" + keywords + "%'";
+var buildSearchQuery = function (keywords, hasPrefix) {
+    var prefix = "";
+    if (hasPrefix) {
+        prefix = "a.";
     }
-    query += " or a.keyword like '%" + keywords + "%'";
-    query += " or a.keyword_en like '%" + keywords + "%'";
-    query += " or a.wenxianhao like '%" + keywords + "%'";
-    query += " or a.feleihao like '%" + keywords + "%'";
+    var query = prefix + "name like '%" + keywords + "%'";
+    if (validator.isNumeric(keywords)) {
+        query += " or " + prefix + "id = " + keywords;
+    } else {
+        query += " or " + prefix + "author like '%" + keywords + "%'";
+    }
+    query += " or " + prefix + "keyword like '%" + keywords + "%'";
+    query += " or " + prefix + "keyword_en like '%" + keywords + "%'";
+    query += " or " + prefix + "wenxianhao like '%" + keywords + "%'";
+    query += " or " + prefix + "fenleihao like '%" + keywords + "%'";
     return query;
 }
 
