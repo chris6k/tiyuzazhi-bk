@@ -30,7 +30,7 @@ magazineDB.listMagazines = function (callback) {
  * @param callback
  */
 magazineDB.listArticles = function (id, callback) {
-    database.query('select a.id, a.name as title, a.creationdate as publishTime' +
+    database.query('select a.id, a.name as title, a.creationdate as publishTime, a.author' +
         ' from article a, issue b' +
         ' where a.issueId = b.id and b.id=\'' + id + "\'" +
         ' order by a.creationdate desc', callback);
