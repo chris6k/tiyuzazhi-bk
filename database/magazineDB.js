@@ -1,4 +1,5 @@
 var database = require("../database/mssql");
+var validator = require("validator");
 var magazineDB = {};
 /**
  * list periodical
@@ -73,5 +74,29 @@ magazineDB.getMagazine = function (id, callback) {
         id +
         ')', callback);
 };
+
+magazineDB.search = function (keywords, index, callback) {
+    if (!index || index == 0) {
+        index = 10;
+    }
+    database.query('select top 10 * from (select top ' + index + 'select a.id, a.name as title, a.creationdate as publishTime, a.author' +
+        ' from article a, issue b' +
+        ' where a.issueId = b.id and (' + buildSearchQuery(keywords) + ')' +
+        ' order by a.id asc) m order by id desc', callback);
+}
+
+var buildSearchQuery = function (keywords) {
+    var query = "a.name like '%" + keywords + "%'";
+    if (validator.isNumeric(keywords)) {
+        query += " or a.id = " + keywords;
+    } else {
+        query += " or a.author like '%" + keywords + "%'";
+    }
+    query += " or a.keyword like '%" + keywords + "%'";
+    query += " or a.keyword_en like '%" + keywords + "%'";
+    query += " or a.wenxianhao like '%" + keywords + "%'";
+    query += " or a.feleihao like '%" + keywords + "%'";
+    return query;
+}
 
 module.exports = magazineDB;

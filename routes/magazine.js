@@ -33,14 +33,24 @@ var returnMagazine = function (nextId, res, callback) {
     });
 }
 
-var checkParam = function (req, res, next) {
+var checkMagId = function (req, res, next) {
     var magId = req.param("magId");
     if (!validator.isNumeric(magId)) {
         res.status(400).json({result: false, data: "invalid param magId"});
     } else {
         next();
     }
+};
+
+var checkKeywords = function (req, res, next) {
+    var keywords = req.param("keywords");
+    if (keywords) {
+        next();
+    } else {
+        res.status(400).json({result: false, data: "miss required param keywords"});
+    }
 }
+
 
 /**
  * 获取最新杂志列表
@@ -63,7 +73,7 @@ router.get('/list', function (req, res) {
 /**
  * 获取杂志目录信息
  */
-router.get('/articles', checkParam, function (req, res) {
+router.get('/articles', checkMagId, function (req, res) {
     var magId = req.param("magId");
     magazineDB.listArticles(magId, function (err, recordSet) {
         returnArticles(err, recordSet, res)
@@ -114,6 +124,17 @@ router.get('/prevMag', function (req, res) {
             }, returnMagazine
         ]
     );
+});
+
+/**
+ * 根据条件搜索杂志信息
+ */
+router.get('/search', checkKeywords, function (req, res) {
+    var keywords = req.param("keywords");
+    var index = req.param("index");
+    magazineDB.search(keywords, index, function (err, recordSet) {
+        returnArticles(err, recordSet, res)
+    });
 });
 
 module.exports = router;
