@@ -3,7 +3,11 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+
 var magazine = require('./routes/magazine');
+var user = require('./routes/user');
+var notify = require('./routes/notify');
+
 var rootPath = "/tiyuzazhi/api";
 var app = express();
 app.listen(8000);
@@ -19,6 +23,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(rootPath + '/mag', magazine);
+app.use(rootPath + '/user', magazine);
+app.use(rootPath + '/notify', magazine);
 
 /// catch 404 and forward to error handler
 app.use(function (req, res, next) {

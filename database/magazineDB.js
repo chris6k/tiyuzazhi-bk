@@ -1,5 +1,8 @@
 var database = require("../database/mssql");
 var validator = require("validator");
+var config = require("../database/home_config");
+database.config = config;
+
 var magazineDB = {};
 /**
  * list periodical

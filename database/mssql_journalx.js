@@ -1,6 +1,6 @@
 var database = {};
 var mssql = require("mssql");
-var config = require("../database/home_config");
+var config = require("../database/out_db_config");
 
 /**
  * get conn from connection pool;
