@@ -7,8 +7,13 @@ var config = require("../database/home_config");
  * @param callback --function(conn, mssql, err);
  * @returns {exports.Connection}
  */
-database.getConn = function (callback) {
+var getConn = function (callback) {
     var conn = new mssql.Connection(config, function (err) {
+        if (err) {
+            console.log('Error');
+            console.error(err.stack);
+            console.log(err);
+        }
         callback(conn, mssql, err);
     });
     conn.on("error", function(err) {
@@ -23,7 +28,7 @@ database.getConn = function (callback) {
  * execute statement with transaction;
  * @param callback -- function(err, resultSet);
  */
-database.transaction = function (statement, callback) {
+var transaction = function (statement, callback) {
     getConn(function (conn, mssql, err) {
         if (err) {
             callback(err, null);
@@ -59,7 +64,7 @@ database.transaction = function (statement, callback) {
  * @param statement
  * @param callback -- function(err, recordSet);
  */
-database.query = function (statement, callback) {
+var query = function (statement, callback) {
     getConn(function (conn, mssql, err) {
         if (err) {
             callback(err, null);
@@ -69,6 +74,10 @@ database.query = function (statement, callback) {
         request.query(statement, callback);
     });
 };
+
+database.getConn = getConn;
+database.transaction = transaction;
+database.query = query;
 module.exports = database;
 
 

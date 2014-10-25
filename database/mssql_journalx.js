@@ -1,17 +1,17 @@
 var database = {};
 var mssql = require("mssql");
-var config = require("../database/out_db_config");
+var config = require("../database/out_config");
 
 /**
  * get conn from connection pool;
  * @param callback --function(conn, mssql, err);
  * @returns {exports.Connection}
  */
-database.getConn = function (callback) {
+var getConn = function (callback) {
     var conn = new mssql.Connection(config, function (err) {
         callback(conn, mssql, err);
     });
-    conn.on("error", function(err) {
+    conn.on("error", function (err) {
         console.log('Error');
         console.error(err.stack);
         console.log(err);

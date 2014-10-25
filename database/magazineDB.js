@@ -1,8 +1,5 @@
 var database = require("../database/mssql");
 var validator = require("validator");
-var config = require("../database/home_config");
-database.config = config;
-
 var magazineDB = {};
 /**
  * list periodical
@@ -25,7 +22,7 @@ magazineDB.listMagazines = function (callback) {
         ' from periodical a, issue b' +
         ' where a.id = b.periodicalId and b.id in (' +
         ' select max(id)' +
-        ' from issue group by periodicalId)', callback);
+        ' from issue group by periodicalId) order by a.id desc', callback);
 };
 
 /**
@@ -34,7 +31,7 @@ magazineDB.listMagazines = function (callback) {
  * @param callback
  */
 magazineDB.listArticles = function (id, callback) {
-    database.query('select a.id, a.name as title, a.creationdate as publishTime, a.author' +
+    database.query('select a.id, a.name as title, a.creationdate as publishTime, a.author, a.summary' +
         ' from article a, issue b' +
         ' where a.issueId = b.id and b.id=\'' + id + "\'" +
         ' order by a.creationdate desc', callback);
@@ -82,7 +79,7 @@ magazineDB.search = function (keywords, index, callback) {
     if (!index) {
         index = 0;
     }
-    var sql = 'select top 10 id, name as title, creationdate as publishTime, author from article where id not in (select top ' + index + ' id' +
+    var sql = 'select top 10 id, name as title, creationdate as publishTime, author, summary from article where id not in (select top ' + index + ' id' +
         ' from article a' +
         ' where ' + buildSearchQuery(keywords, true) + ' order by id asc) and (' + buildSearchQuery(keywords, false) + ') order by id asc';
     console.log("sql => " + sql);
@@ -105,6 +102,11 @@ var buildSearchQuery = function (keywords, hasPrefix) {
     query += " or " + prefix + "wenxianhao like '%" + keywords + "%'";
     query += " or " + prefix + "fenleihao like '%" + keywords + "%'";
     return query;
+}
+
+magazineDB.notice = function (callback) {
+    var sql = 'select id, title from news';
+    database.query(sql, callback);
 }
 
 module.exports = magazineDB;

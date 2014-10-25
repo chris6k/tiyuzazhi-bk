@@ -6,7 +6,6 @@ var bodyParser = require('body-parser');
 
 var magazine = require('./routes/magazine');
 var user = require('./routes/user');
-var notify = require('./routes/notify');
 
 var rootPath = "/tiyuzazhi/api";
 var app = express();
@@ -23,8 +22,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(rootPath + '/mag', magazine);
-app.use(rootPath + '/user', magazine);
-app.use(rootPath + '/notify', magazine);
+app.use(rootPath + '/user', user);
 
 /// catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -50,6 +48,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
+    console.error(err);
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,

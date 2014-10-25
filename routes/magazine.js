@@ -15,6 +15,7 @@ var returnArticles = function (err, recordSet, res) {
         }
         res.status(200).json({result: true, data: result});
     } else {
+        console.error(err);
         res.status(200).json({result: false, data: "发生异常"});
     }
 };
@@ -64,6 +65,7 @@ router.get('/list', function (req, res) {
             }
             res.status(200).json({result: true, data: result});
         } else {
+            console.error(err);
             res.status(200).json({result: false, data: "发生异常"});
         }
     });
@@ -76,7 +78,7 @@ router.get('/list', function (req, res) {
 router.get('/articles', checkMagId, function (req, res) {
     var magId = req.param("magId");
     magazineDB.listArticles(magId, function (err, recordSet) {
-        returnArticles(err, recordSet, res)
+        returnArticles(err, recordSet, res);
     });
 });
 
@@ -134,6 +136,12 @@ router.get('/search', checkKeywords, function (req, res) {
     var index = req.param("index");
     magazineDB.search(keywords, index, function (err, recordSet) {
         returnArticles(err, recordSet, res)
+    });
+});
+
+router.get('/news', function (req, res) {
+    magazineDB.notice(function (err, recordSet) {
+        returnArticles(err, recordSet, res);
     });
 });
 

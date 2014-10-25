@@ -33,4 +33,5 @@ if (app.get('env') === 'development') {
         }
     }
 }
+console.log("config => user = " + config.user + ", server = " + config.server);
 module.exports = config;
