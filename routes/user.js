@@ -32,7 +32,10 @@ router.post("/register", function (req, res) {
     var password = req.param("password");
     userDB.register(username, password, function (err, recordSet) {
         if (!err) {
+            userDB.getUserInfo(username, password, function(err, recordSet){
             res.status(200).json(new result(true, null, null));
+
+            });
         } else {
             console.error(err);
             res.status(200).json(new result(false, null, "注册用户失败"))
