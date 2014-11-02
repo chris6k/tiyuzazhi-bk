@@ -5,6 +5,7 @@ var express = require('express');
 var examineDB = require('../database/examineDB');
 var role_validator = require("../routes/role_validator");
 var result = require("../result");
+var async = require("async");
 var router = express.Router();
 
 /**
@@ -28,6 +29,7 @@ router.get("examArts", role_validator, function (req, res) {
 
 /**
  * 审核文章
+ * 1. 更新person_reviewer表 2.更新manuflow表 3.更新mail_queue表
  */
 router.post("examine", role_validator, function (req, res) {
     var uid = req.param("uid");
@@ -111,7 +113,7 @@ router.get("get", role_validator, function (req, res) {
             res.status(200).json(new result(false, null, "get article failed"));
         } else {
             var data = recordSet.length > 0 ? recordSet[0] : {};
-            res.status(200).json(new result(true, recordSet, ""));
+            res.status(200).json(new result(true, data, ""));
         }
     });
 });

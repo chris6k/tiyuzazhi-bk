@@ -32,5 +32,32 @@ userDB.getUserInfoById = function (uid, callback) {
         ' from participant where id = ' + uid, callback);
 };
 
+/**
+ * 这个一个普通用户
+ * @param username
+ * @param password
+ * @param callback
+ */
+userDB.register = function (username, password, callback) {
+    database.query('insert into participant(login_id, remote_password,role_committee,' +
+        ' role_final, role_reader, role_external, role_author, role_tutor,' +
+        ' participant_type) values(\'' + username + '\',\'' + password + '\',\'' + username + '\',\'F\',\'F\',\'F\',\'F\',\'F\',\'F\',\'P\')', callback);
+};
+
+
+/**
+ * 更新用户信息
+ * @param uid
+ * @param name
+ * @param email
+ * @param company
+ * @param tel
+ * @param callback
+ */
+userDB.update = function (uid, name, email, company, tel, callback) {
+    database.query('update participant set email=\'' + email + '\', participant_name=\'' + name + "\', email=\'" + email + "\'," +
+        ' dis_onecompany=\'' + company + '\', dis_onephone=\'' + tel + '\' where participant_id=' + uid, callback);
+};
+
 
 module.exports = userDB;
