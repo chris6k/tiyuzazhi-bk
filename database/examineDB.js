@@ -3,7 +3,7 @@ var async = require("async");
 var examineDB = {};
 
 /**
- * 获取待审核的文章
+ * 外审获取待审核的文章
  * @param uid 用户的ID
  * @param callback
  */
@@ -14,7 +14,16 @@ examineDB.getAllExamArts = function (uid, callback) {
         " from person_reviewer a, participant b, manuflow c, review_phase d" +
         " where c.flow_id=a.flow_id and d.phase_id = a.phase_id and a.participant_id = b.participant_id" +
         " and a.participant_id = " +
-        uid + " order by a.manu_id desc, a.flow_id asc", callback);
+        uid + " and reviewStatus = 0 order by a.manu_id desc, a.flow_id asc", callback);
+};
+
+/**
+ * 获取文章
+ * @param uid
+ * @param callback
+ */
+examineDB.getAllArts = function (uid, isMaster, callback) {
+    database.query('', callback);
 };
 
 /**
@@ -98,13 +107,15 @@ examineDB.updateEmail = function (aid, uid, exam, msg, callback) {
 /**
  * 指定审稿人
  * @param uid
- * @param tid
+ * @param fid
  * @param aid
  * @param callback
  */
-examineDB.send = function (uid, tid, aid, callback) {
-    //TODO
-    database.query("", callback);
+examineDB.send = function (uid, fid, aid, callback) {
+    database.query("insert into person_reviewer(participant_id, mag_id, manu_id," +
+        " flow_id, phase_id, handler_type, deal_status, manu_status) values (" +
+        uid + ",1," + aid + "," + fid + ",9,3,0,0" +
+        ")", callback);
 };
 
 /**
@@ -113,21 +124,52 @@ examineDB.send = function (uid, tid, aid, callback) {
  * @param callback
  */
 examineDB.examHistory = function (aid, callback) {
-    //TODO
-    database.query("", callback);
+    database.query('select a.flow_id as flowId, a.manu_id as manuId, a.manu_number as manuNumber, c.phase_name as phaseName,' +
+        ' a.review_status as status, a.is_agree as isAgree, a.opinion as opinion,' +
+        ' a.opinion_modified as opinionModified, a.opiniontoauthor, b.participant_name as examinername,' +
+        ' a.actual_date as examineDate ' +
+        'from manuflow a,  participant b, review_phase c ' +
+        'where a.handler_id = b.participant_id and a.phase_id = c.phase_id and a.opiniontoauthor_origin is not null ' +
+        'and a.manu_id = ' + aid +
+        'order by manu_id, flow_id asc;', callback);
 };
 
 /**
- * 根据主编获取对应的审稿人信息
+ * 获取审稿日志
+ * @param aid
+ * @param callback
+ */
+examineDB.examLog = function (aid, callback) {
+    database.query('select a.log_id as logId, a.manu_id as manuId, a.occurrence_time as examineDate,' +
+        ' c.participant_name as submitter, b.participant_name as examiner,' +
+        ' a.content from manuscript_log a, participant b, participant c' +
+        ' where a.handler_id = b.participant_id and a.submitter_id = c.participant_id and manu_id = ' + aid +
+        ' order by occurrence_time asc', callback);
+};
+
+/**
+ * 获取编辑信息
  * @param uid
  * @param callback
  */
 examineDB.getExaminerList = function (uid, callback) {
-    database.query('participant_id as id, login_id as username,' +
+    database.query('select participant_id as id, login_id as username,' +
             ' participant_name as name, picture as iconPath, dis_onecompany as company, dis_oneaddress as address,' +
             ' email, dis_onephone as mobile, role_committee, role_final, role_reader, role_external, role_author, role_tutor, participant_type as type' +
             ' from participant where participant_type = \'U\'', callback
     );
+};
+
+/**
+ * 获取外审专家信息
+ * @param aid
+ * @param callback
+ */
+examineDB.getMasterList = function (aid, callback) {
+    database.query('select participant_id as id, login_id as username,' +
+        ' participant_name as name, picture as iconPath, dis_onecompany as company, dis_oneaddress as address,' +
+        ' email, dis_onephone as mobile, role_committee, role_final, role_reader, role_external, role_author, role_tutor, participant_type as type' +
+        ' from participant where role_external = \'T\'', callback);
 };
 
 /**
