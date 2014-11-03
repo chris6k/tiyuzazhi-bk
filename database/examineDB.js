@@ -26,6 +26,7 @@ examineDB.getAllExamArts = function (uid, callback) {
  * @param callback
  */
 examineDB.updatePersonReviewer = function (aid, uid, exam, msg, callback) {
+    //TODO
     database.query("", callback);
 };
 
@@ -39,6 +40,7 @@ examineDB.updatePersonReviewer = function (aid, uid, exam, msg, callback) {
  * @param callback
  */
 examineDB.updateManuFlow = function (aid, uid, exam, msg, isCE, callback) {
+    //TODO
     database.query("", callback);
 };
 
@@ -51,6 +53,7 @@ examineDB.updateManuFlow = function (aid, uid, exam, msg, isCE, callback) {
  * @param callback
  */
 examineDB.updateManuConclusion = function (magid, aid, uid, msg, callback) {
+    //TODO
     database.query("", callback);
 };
 
@@ -65,6 +68,7 @@ examineDB.updateManuConclusion = function (magid, aid, uid, msg, callback) {
  * @param callback
  */
 examineDB.updateManuscriptLog = function (magid, title, submitterid, handlerid, content, ps, callback) {
+    //TODO
     database.query("", callback);
 };
 
@@ -86,6 +90,7 @@ examineDB.getManuscriptReviewer = function (manuid, callback) {
  * @param callback
  */
 examineDB.updateEmail = function (aid, uid, exam, msg, callback) {
+    //TODO
     database.query("", callback);
 };
 
@@ -118,8 +123,11 @@ examineDB.examHistory = function (aid, callback) {
  * @param callback
  */
 examineDB.getExaminerList = function (uid, callback) {
-    //TODO
-    database.query("", callback);
+    database.query('participant_id as id, login_id as username,' +
+            ' participant_name as name, picture as iconPath, dis_onecompany as company, dis_oneaddress as address,' +
+            ' email, dis_onephone as mobile, role_committee, role_final, role_reader, role_external, role_author, role_tutor, participant_type as type' +
+            ' from participant where participant_type = \'U\'', callback
+    );
 };
 
 /**
@@ -128,8 +136,7 @@ examineDB.getExaminerList = function (uid, callback) {
  * @param callback
  */
 examineDB.getById = function (aid, callback) {
-    //TODO
-    database.query("", callback);
+    database.query("select manu_number as publishNo, title, summary from manuscript where manu_id = " + aid, callback);
 };
 
 
