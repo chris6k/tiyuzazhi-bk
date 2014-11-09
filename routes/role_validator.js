@@ -17,7 +17,7 @@ var validator = function (req, res, next) {
         },
         function (callback) {
             var user = userDB.getUserInfoById(uid);
-            if (!user || user.participant_type !== "" || user.participant_type !== "") {
+            if (!user || user.participant_type !== "" || user.role_external === "T") {
                 callback("invalid user");
             } else {
                 callback(null);

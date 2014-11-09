@@ -3,10 +3,12 @@ var database = require("../database/mssql_journalx");
 var userDB = {};
 
 userDB.getUserInfo = function (usr, remotePassword, callback) {
-    database.query('select participant_id as id, login_id as username,' +
+    var query = 'select participant_id as id, login_id as username,' +
         ' participant_name as name, picture as iconPath, dis_onecompany as company, dis_oneaddress as address,' +
         ' email, dis_onephone as mobile, role_committee, role_final, role_reader, role_external, role_author, role_tutor, participant_type as type' +
-        ' from participant where login_id like \'' + usr + "\' and remote_password like \'" + remotePassword + "\'", callback);
+        ' from participant where login_id like \'' + usr + "\' and remote_password like \'" + remotePassword + "\'";
+    console.log(query);
+    database.query(query, callback);
 };
 
 
@@ -39,9 +41,11 @@ userDB.getUserInfoById = function (uid, callback) {
  * @param callback
  */
 userDB.register = function (username, password, callback) {
-    database.query('insert into participant(login_id, remote_password,role_committee,' +
+    var query = 'insert into participant(login_id, remote_password,participant_name, email, picture , dis_onecompany, dis_oneaddress, dis_onephone , role_committee,' +
         ' role_final, role_reader, role_external, role_author, role_tutor,' +
-        ' participant_type) values(\'' + username + '\',\'' + password + '\',\'' + username + '\',\'F\',\'F\',\'F\',\'F\',\'F\',\'F\',\'P\')', callback);
+        ' participant_type) values(\'' + username + '\',\'' + password + '\',\'' + username + '\',\'' + username + '\',\'\',\'\',\'\',\'\',\'F\',\'F\',\'T\',\'F\',\'T\',\'F\',\'P\')';
+    console.log(query);
+    database.query(query, callback);
 };
 
 

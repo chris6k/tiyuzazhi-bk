@@ -7,7 +7,7 @@ if (app.get('env') === 'development') {
         user: 'tiyukeji',
         password: 'tiyukeji',
         server: '192.168.10.109',
-        database: 'tiyukeji',
+        database: 'journalx_cn',
         pool: {
             max: 1,
             min: 1,

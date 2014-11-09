@@ -8,22 +8,61 @@ var examineDB = {};
  * @param callback
  */
 examineDB.getAllExamArts = function (uid, callback) {
-    database.query("select a.manu_id as id, c.review_status as reviewStatus, d.phase_name as phaseName," +
-        " a.handler_type as handlerType, deal_status as dealStatus, manu_status as manuStatus," +
-        " participant_name as name" +
-        " from person_reviewer a, participant b, manuflow c, review_phase d" +
-        " where c.flow_id=a.flow_id and d.phase_id = a.phase_id and a.participant_id = b.participant_id" +
-        " and a.participant_id = " +
-        uid + " and reviewStatus = 0 order by a.manu_id desc, a.flow_id asc", callback);
+    var query = "select a.manu_id as id, a.summary, a.manu_number as draftNo," +
+        "a.currentflow_submit_date as examineStart," +
+        "a.currentflow_actual_date as examineFinish," +
+        "a.currentflow_plan_date as examineEnd, a.review_status as state," +
+        "a.currentflow_handler_name as opName, a.manu_type_id as category," +
+        "a.phase_id as step," +
+        "b.opinion_modified as comment, b.handler_id as opId, b.score as score" +
+        "from manuscript a, manuflow b where a.flow_id = b.flow_id and b.handler_id = " + uid + " order by examineStart asc";
+    database.query(query, callback);
 };
 
 /**
- * 获取文章
+ * 編輯获取待审核文章
+ * @param uid
+ * @param flowid
+ * @param offset
+ * @param callback
+ */
+examineDB.getAllEditorArts = function (uid, flowid, offset, callback) {
+    if (!offset) {
+        offset = 0;
+    }
+    var query = "select top 10 a.manu_id as id, a.summary,a.title as title,a.submit_date as submitDate, a.manu_number as draftNo," +
+        "a.currentflow_submit_date as examineStart," +
+        "a.currentflow_actual_date as examineFinish," +
+        "a.currentflow_plan_date as examineEnd, a.review_status as state," +
+        "a.currentflow_handler_name as opName, a.manu_type_id as category," +
+        "a.phase_id as step," +
+        "b.opinion_modified as comment, b.handler_id as opId, b.score as score" +
+        " from manuscript a, manuflow b where a.manu_id not in (select top " + offset +
+        " c.manu_id from manuscript c, manuflow d where c.currentflow_actual_date is null " +
+        "and c.flow_id = d.flow_id and c.phase_id in (6,7,9,10,24) and d.handler_id=" + uid;
+    if (flowid) query += " and c.phase_id = " + flowid;
+    query += " order by c.currentflow_submit_date desc) and (a.flow_id = b.flow_id and a.phase_id in (6,7,9,10,24) and a.currentflow_actual_date is null and b.handler_id = " + uid;
+    if (flowid) query += " and step = " + flowid;
+    query += ") order by examineStart desc";
+    console.log(query);
+    database.query(query, callback);
+};
+
+/**
+ * 主编获取待审核文章
  * @param uid
  * @param callback
  */
-examineDB.getAllArts = function (uid, isMaster, callback) {
-    database.query('', callback);
+examineDB.getAllCEditorArts = function (uid, callback) {
+    var query = "select a.manu_id as id, a.summary, a.manu_number as draftNo," +
+        "a.currentflow_submit_date as examineStart," +
+        "a.currentflow_actual_date as examineFinish," +
+        "a.currentflow_plan_date as examineEnd, a.review_status as state," +
+        "a.currentflow_handler_name as opName, a.manu_type_id as category," +
+        "a.phase_id as step," +
+        "b.opinion_modified as comment, b.handler_id as opId, b.score as score" +
+        "from manuscript a, manuflow b where a.flow_id = b.flow_id and b.handler_id = " + uid + "order by examineStart asc";
+    database.query(query, callback);
 };
 
 /**
@@ -87,7 +126,10 @@ examineDB.updateManuscriptLog = function (magid, title, submitterid, handlerid, 
  * @param callback
  */
 examineDB.getManuscriptReviewer = function (manuid, callback) {
-    database.query("", callback);
+    database.query('select participant_id as id, login_id as username,' +
+        ' participant_name as name, picture as iconPath, dis_onecompany as company, dis_oneaddress as address,' +
+        ' email, dis_onephone as mobile, role_committee, role_final, role_reader, role_external, role_author, role_tutor, participant_type as type' +
+        ' from participant a, manuscript_reviewer b where a.participant_id = b.person_key and b.manu_id=' + manuid + " and tuijian=\'T\'", callback);
 };
 
 /**
@@ -124,14 +166,16 @@ examineDB.send = function (uid, fid, aid, callback) {
  * @param callback
  */
 examineDB.examHistory = function (aid, callback) {
-    database.query('select a.flow_id as flowId, a.manu_id as manuId, a.manu_number as manuNumber, c.phase_name as phaseName,' +
+    var query = 'select a.flow_id as flowId, a.phase_id as step, a.manu_id as id, a.manu_number as draftNo, c.phase_name as phaseName,' +
         ' a.review_status as status, a.is_agree as isAgree, a.opinion as opinion,' +
-        ' a.opinion_modified as opinionModified, a.opiniontoauthor, b.participant_name as examinername,' +
-        ' a.actual_date as examineDate ' +
-        'from manuflow a,  participant b, review_phase c ' +
-        'where a.handler_id = b.participant_id and a.phase_id = c.phase_id and a.opiniontoauthor_origin is not null ' +
-        'and a.manu_id = ' + aid +
-        'order by manu_id, flow_id asc;', callback);
+        ' a.opinion_modified as comment, a.opiniontoauthor, b.participant_name as examinername,' +
+        ' a.actual_date as examineFinish, a.plan_date as examineEnd, a.plan_date as examineStart ' +
+        ' from manuflow a,  participant b, review_phase c ' +
+        ' where a.handler_id = b.participant_id and a.phase_id = c.phase_id ' +
+        ' and a.manu_id = ' + aid +
+        ' order by flow_id desc';
+    console.log(query);
+    database.query(query, callback);
 };
 
 /**
@@ -178,7 +222,30 @@ examineDB.getMasterList = function (aid, callback) {
  * @param callback
  */
 examineDB.getById = function (aid, callback) {
-    database.query("select manu_number as publishNo, title, summary from manuscript where manu_id = " + aid, callback);
+    var query = "select a.manu_id as id, a.dis_authors as author,a.title as title, a.summary,a.submit_date as submitDate, a.manu_number as draftNo," +
+        " a.currentflow_submit_date as examineStart," +
+        " a.currentflow_actual_date as examineFinish," +
+        " a.currentflow_plan_date as examineEnd, a.review_status as state," +
+        " a.currentflow_handler_name as opName, a.manu_type_id as category," +
+        " a.phase_id as step," +
+        " b.opinion_modified as comment, b.handler_id as opId, b.score as score" +
+        " from manuscript a, manuflow b, manuscript_authors c where  a.manu_id = c.manu_id and a.flow_id = b.flow_id and a.manu_id = " + aid;
+    console.log(query);
+    database.query(query, callback);
+};
+
+examineDB.getByUid = function (uid, callback) {
+    var query = "select top 1 a.manu_id as id,a.title as title, a.summary,a.submit_date as submitDate, a.manu_number as draftNo," +
+        "a.currentflow_submit_date as examineStart," +
+        "a.currentflow_actual_date as examineFinish," +
+        "a.currentflow_plan_date as examineEnd, a.review_status as state," +
+        "a.currentflow_handler_name as opName, a.manu_type_id as category," +
+        "a.phase_id as step, b.opinion_modified as comment, b.handler_id as opId, b.score as score" +
+        " from manuscript a, manuflow b, manuscript_authors c " +
+        " where a.flow_id = b.flow_id and a.manu_id = c.manu_id and c.person_key = " + uid +
+        " order by currentflow_submit_date desc";
+    console.info(query);
+    database.query(query, callback);
 };
 
 

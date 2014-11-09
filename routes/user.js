@@ -16,10 +16,10 @@ router.post('/login', function (req, res) {
             var data = null;
             if (recordSet.length > 0) {
                 data = recordSet[0];
+                res.status(200).json(new result(true, data, ""));
             } else {
-                data = {};
+                res.status(200).json(new result(false, data, "未找到用户"));
             }
-            res.status(200).json(new result(true, data, ""));
         } else {
             console.error(err);
             res.status(200).json(new result(false, null, "登录时发生异常"));
@@ -32,9 +32,8 @@ router.post("/register", function (req, res) {
     var password = req.param("password");
     userDB.register(username, password, function (err, recordSet) {
         if (!err) {
-            userDB.getUserInfo(username, password, function(err, recordSet){
-            res.status(200).json(new result(true, null, null));
-
+            userDB.getUserInfo(username, password, function (err, recordSet) {
+                res.status(200).json(new result(true, null, null));
             });
         } else {
             console.error(err);

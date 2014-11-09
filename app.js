@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 
 var magazine = require('./routes/magazine');
 var user = require('./routes/user');
+var exam = require('./routes/examine');
 
 var rootPath = "/tiyuzazhi/api";
 var app = express();
@@ -23,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(rootPath + '/mag', magazine);
 app.use(rootPath + '/user', user);
+app.use(rootPath + "/exam", exam);
 
 /// catch 404 and forward to error handler
 app.use(function (req, res, next) {
