@@ -24,9 +24,10 @@ examineDB.getAllExamArts = function (uid, callback) {
  * @param uid
  * @param flowid
  * @param offset
+ * @param isAsc
  * @param callback
  */
-examineDB.getAllEditorArts = function (uid, flowid, offset, callback) {
+examineDB.getAllEditorArts = function (uid, flowid, offset, isAsc, callback) {
     if (!offset) {
         offset = 0;
     }
@@ -41,9 +42,11 @@ examineDB.getAllEditorArts = function (uid, flowid, offset, callback) {
         " c.manu_id from manuscript c, manuflow d where c.currentflow_actual_date is null " +
         "and c.flow_id = d.flow_id and c.phase_id in (6,7,9,10,24) and d.handler_id=" + uid;
     if (flowid) query += " and c.phase_id = " + flowid;
-    query += " order by c.currentflow_submit_date desc) and (a.flow_id = b.flow_id and a.phase_id in (6,7,9,10,24) and a.currentflow_actual_date is null and b.handler_id = " + uid;
+    query = query + " order by c.currentflow_submit_date " + (isAsc ? " asc " : " desc ") + ") and (a.flow_id = b.flow_id and a.phase_id in (6,7,9,10,24) and a.currentflow_actual_date is null and b.handler_id = " + uid;
     if (flowid) query += " and step = " + flowid;
-    query += ") order by examineStart desc";
+    query += ") order by examineStart";
+    if (isAsc == 0)
+        query += " desc ";
     console.log(query);
     database.query(query, callback);
 };

@@ -58,6 +58,28 @@ router.post("/update", function (req, res) {
     });
 });
 
+/**
+ * 获取未处理的任务数
+ */
+router.get('/todo', function (req, res) {
+    var uid = req.param("uid");
+    userDB.getToDoCount(uid, function (err, recordSet) {
+        if (!err) {
+            var data = {};
+            if (recordSet.length > 0) {
+                data.editor = recordSet[0].editor_todo;
+                data.external = recordSet[1].editor_todo;
+                data.ceditor = recordSet[2].editor_todo;
+                data.author = recordSet[3].editor_todo;
+            }
+            res.status(200).json(new result(true, data, null));
+        } else {
+            console.error(err);
+            res.status(200).json(new result(false, null, null));
+        }
+    });
+});
+
 
 router.post('/mailCount', function (req, res) {
     var uid = req.param("uid");

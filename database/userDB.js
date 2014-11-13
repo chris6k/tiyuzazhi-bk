@@ -35,6 +35,20 @@ userDB.getUserInfoById = function (uid, callback) {
 };
 
 /**
+ * 根据UID获取未处理的任务数
+ * @param uid
+ * @param callback
+ */
+userDB.getToDoCount = function (uid, callback) {
+    var query = "select count(1) as editor_todo from manuscript a where currentflow_actual_date is null and phase_id in (6,7,10,24) and exists(select 1 from manuflow b where a.flow_id = b.flow_id and b.handler_id=" + uid + ")" +
+        " union all select count(1) as external_todo from manuscript a where currentflow_actual_date is null and phase_id in (9) and exists(select 1 from manuflow b where a.flow_id = b.flow_id and b.handler_id=" + uid + ")" +
+        " union all select count(1) as ceditor_todo from manuscript a where currentflow_actual_date is null and phase_id in (24) and exists(select 1 from manuflow b where a.flow_id = b.flow_id and b.handler_id=" + uid + ")" +
+        " union all  select count(1) as author_todo  from manuscript a where a.currentflow_actual_date is null and a.phase_id in (6,7,9,10,24) and exists(select 1 from manuscript_authors b where a.manu_id = b.manu_id and b.person_key=" + uid + ")";
+    console.log(query);
+    database.query(query, callback);
+};
+
+/**
  * 这个一个普通用户
  * @param username
  * @param password

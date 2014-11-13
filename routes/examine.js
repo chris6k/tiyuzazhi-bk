@@ -13,9 +13,10 @@ var router = express.Router();
  */
 router.get("/examArts", function (req, res) {
     var uid = req.param("uid");
-    var flowId = req.param("flowId");
-    var offset = req.param("offset");
-    examineDB.getAllEditorArts(uid, flowId, offset, function (err, recordSet) {
+    var flowId = req.param("step");
+    var offset = req.param("of");
+    var isAsc = req.param("asc");
+    examineDB.getAllEditorArts(uid, flowId, offset, isAsc, function (err, recordSet) {
         if (err) {
             console.error(err);
             res.status(200).json(new result(false, null, "get data err!"));
