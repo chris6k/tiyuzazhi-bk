@@ -43,7 +43,7 @@ examineDB.getAllEditorArts = function (uid, flowid, offset, isAsc, callback) {
         "and c.flow_id = d.flow_id and c.phase_id in (6,7,9,10,24) and d.handler_id=" + uid;
     if (flowid) query += " and c.phase_id = " + flowid;
     query = query + " order by c.currentflow_submit_date " + (isAsc ? " asc " : " desc ") + ") and (a.flow_id = b.flow_id and a.phase_id in (6,7,9,10,24) and a.currentflow_actual_date is null and b.handler_id = " + uid;
-    if (flowid) query += " and step = " + flowid;
+    if (flowid) query += " and a.phase_id = " + flowid;
     query += ") order by examineStart";
     if (isAsc == 0)
         query += " desc ";

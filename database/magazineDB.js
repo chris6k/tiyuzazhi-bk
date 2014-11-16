@@ -31,9 +31,9 @@ magazineDB.listMagazines = function (callback) {
  * @param callback
  */
 magazineDB.listArticles = function (id, callback) {
-    database.query('select a.id, a.name as title, a.creationdate as publishTime, a.author, a.summary' +
-        ' from article a, issue b' +
-        ' where a.issueId = b.id and b.id=\'' + id + "\'" +
+    database.query('select a.id, a.name as title, a.creationdate as publishTime, a.author, a.summary, a.keyword, c.bigFilename as attachment' +
+        ' from article a, issue b, attachment c' +
+        ' where a.issueId = b.id and a.id = c.articleId and b.id=\'' + id + "\'" +
         ' order by a.creationdate desc', callback);
 };
 
@@ -105,7 +105,7 @@ var buildSearchQuery = function (keywords, hasPrefix) {
 }
 
 magazineDB.notice = function (callback) {
-    var sql = 'select id, title from news';
+    var sql = 'select id, title from news order by createDate desc';
     database.query(sql, callback);
 }
 
