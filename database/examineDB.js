@@ -37,12 +37,13 @@ examineDB.getAllEditorArts = function (uid, flowid, offset, isAsc, callback) {
         "a.currentflow_plan_date as examineEnd, a.review_status as state," +
         "a.currentflow_handler_name as opName, a.manu_type_id as category," +
         "a.phase_id as step," +
-        "b.opinion_modified as comment, b.handler_id as opId, b.score as score" +
+        "b.opinion_modified as comment, b.handler_id as opId, b.score as score," +
+        "(select top 1 f.participant_name from manuflow e, participant f where e.handler_id = f.participant_id and e.manu_id = a.manu_id and e.flow_id < a.flow_id order by e.flow_id desc) as prevOpName, a.currentflow_submit_date as prevExamineFinish" +
         " from manuscript a, manuflow b where a.manu_id not in (select top " + offset +
         " c.manu_id from manuscript c, manuflow d where c.currentflow_actual_date is null " +
-        "and c.flow_id = d.flow_id and c.phase_id in (6,7,9,10,24) and d.handler_id=" + uid;
+        "and c.flow_id = d.flow_id and a.manu_number is not null and a.manu_number != '' and d.handler_id=" + uid;
     if (flowid) query += " and c.phase_id = " + flowid;
-    query = query + " order by c.currentflow_submit_date " + (isAsc ? " asc " : " desc ") + ") and (a.flow_id = b.flow_id and a.phase_id in (6,7,9,10,24) and a.currentflow_actual_date is null and b.handler_id = " + uid;
+    query = query + " order by c.currentflow_submit_date " + (isAsc == 0 ? " desc " : " asc ") + ") and (a.flow_id = b.flow_id and a.manu_number is not null and a.manu_number != '' and a.currentflow_actual_date is null and b.handler_id = " + uid;
     if (flowid) query += " and a.phase_id = " + flowid;
     query += ") order by examineStart";
     if (isAsc == 0)
@@ -56,15 +57,27 @@ examineDB.getAllEditorArts = function (uid, flowid, offset, isAsc, callback) {
  * @param uid
  * @param callback
  */
-examineDB.getAllCEditorArts = function (uid, callback) {
-    var query = "select a.manu_id as id, a.summary, a.manu_number as draftNo," +
+examineDB.getAllCEditorArts = function (uid, flowid, offset, isAsc, callback) {
+    if (!offset) {
+        offset = 0;
+    }
+    var query = "select top 10 a.manu_id as id, a.summary,a.title as title,a.submit_date as submitDate, a.manu_number as draftNo," +
         "a.currentflow_submit_date as examineStart," +
         "a.currentflow_actual_date as examineFinish," +
         "a.currentflow_plan_date as examineEnd, a.review_status as state," +
         "a.currentflow_handler_name as opName, a.manu_type_id as category," +
         "a.phase_id as step," +
         "b.opinion_modified as comment, b.handler_id as opId, b.score as score" +
-        "from manuscript a, manuflow b where a.flow_id = b.flow_id and b.handler_id = " + uid + "order by examineStart asc";
+        " from manuscript a, manuflow b where a.manu_id not in (select top " + offset +
+        " c.manu_id from manuscript c, manuflow d where c.currentflow_actual_date is null " +
+        "and c.flow_id = d.flow_id and a.manu_number is not null and a.manu_number != '' and d.handler_id=" + uid;
+    if (flowid) query += " and c.phase_id = " + flowid;
+    query = query + " order by c.currentflow_submit_date " + (isAsc == 0 ? " desc " : " asc ") + ") and (a.flow_id = b.flow_id and a.manu_number is not null and a.manu_number != '' and a.currentflow_actual_date is null and b.handler_id = " + uid;
+    if (flowid) query += " and a.phase_id = " + flowid;
+    query += ") order by examineStart";
+    if (isAsc == 0)
+        query += " desc ";
+    console.log(query);
     database.query(query, callback);
 };
 

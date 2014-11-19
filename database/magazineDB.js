@@ -22,7 +22,7 @@ magazineDB.listMagazines = function (callback) {
         ' from periodical a, issue b' +
         ' where a.id = b.periodicalId and b.id in (' +
         ' select max(id)' +
-        ' from issue group by periodicalId) order by a.id desc', callback);
+        ' from issue group by periodicalId) order by b.periodicalId asc', callback);
 };
 
 /**
