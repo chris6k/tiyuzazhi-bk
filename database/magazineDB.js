@@ -31,10 +31,10 @@ magazineDB.listMagazines = function (callback) {
  * @param callback
  */
 magazineDB.listArticles = function (id, callback) {
-    database.query('select a.id, a.name as title, a.creationdate as publishTime, a.author, a.summary, a.keyword, c.bigFilename as attachment' +
+    database.query('select a.id, a.name as title, a.creationdate as publishTime, a.author, a.summary, a.keyword, c.id as attachment' +
         ' from article a, issue b, attachment c' +
         ' where a.issueId = b.id and a.id = c.articleId and b.id=\'' + id + "\'" +
-        ' order by a.creationdate desc', callback);
+        ' order by a.creationdate asc', callback);
 };
 
 /**
