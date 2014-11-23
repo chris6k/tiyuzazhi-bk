@@ -41,9 +41,9 @@ examineDB.getAllEditorArts = function (uid, flowid, offset, isAsc, callback) {
         "(select top 1 f.participant_name from manuflow e, participant f where e.handler_id = f.participant_id and e.manu_id = a.manu_id and e.flow_id < a.flow_id order by e.flow_id desc) as prevOpName, a.currentflow_submit_date as prevExamineFinish" +
         " from manuscript a, manuflow b where a.manu_id not in (select top " + offset +
         " c.manu_id from manuscript c, manuflow d where c.currentflow_actual_date is null " +
-        "and c.flow_id = d.flow_id and a.manu_number is not null and a.manu_number != '' and d.handler_id=" + uid;
+        "and c.flow_id = d.flow_id and a.manu_number is not null and a.manu_number != '' and (d.handler_id=" + uid + " or d.handler_id in (select user_key from user_in_group where group_id in (select group_id from user_in_group where user_key=" + uid + ")))";
     if (flowid) query += " and c.phase_id = " + flowid;
-    query = query + " order by c.currentflow_submit_date " + (isAsc == 0 ? " desc " : " asc ") + ") and (a.flow_id = b.flow_id and a.manu_number is not null and a.manu_number != '' and a.currentflow_actual_date is null and b.handler_id = " + uid;
+    query = query + " order by c.currentflow_submit_date " + (isAsc == 0 ? " desc " : " asc ") + ") and (a.flow_id = b.flow_id and a.manu_number is not null and a.manu_number != '' and a.currentflow_actual_date is null and (b.handler_id=" + uid + " or b.handler_id in (select user_key from user_in_group where group_id in (select group_id from user_in_group where user_key=" + uid + ")))";
     if (flowid) query += " and a.phase_id = " + flowid;
     query += ") order by examineStart";
     if (isAsc == 0)
@@ -185,7 +185,7 @@ examineDB.examHistory = function (aid, callback) {
     var query = 'select a.flow_id as flowId, a.phase_id as step, a.manu_id as id, a.manu_number as draftNo, c.phase_name as phaseName,' +
         ' a.review_status as status, a.is_agree as isAgree, a.opinion as opinion,' +
         ' a.opinion_modified as comment, a.opiniontoauthor, b.participant_name as examinername,' +
-        ' a.actual_date as examineFinish, a.plan_date as examineEnd, a.plan_date as examineStart ' +
+        ' a.actual_date as examineFinish, a.plan_date as examineEnd, a.submit_date as examineStart ' +
         ' from manuflow a,  participant b, review_phase c ' +
         ' where a.handler_id = b.participant_id and a.phase_id = c.phase_id ' +
         ' and a.manu_id = ' + aid +

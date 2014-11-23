@@ -22,7 +22,7 @@ userDB.getFavCount = function (uid, callback) {
 
 userDB.getEmailCount = function (uid, callback) {
     database.query('select max(mail_id) as mailId, count(mail_id) as mailCount from mail_queue' +
-        ' where DATEADD(dd, 0, DATEDIFF(dd, 0, create_time)) = DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE())) and owner_id = \'' +
+        ' where DATEADD(dd, 0, DATEDIFF(dd, 0, create_time)) <= DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE())) and owner_id = \'' +
         uid
         + '\' group by create_time', callback);
 };
