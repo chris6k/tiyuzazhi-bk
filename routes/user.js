@@ -81,15 +81,16 @@ router.get('/todo', function (req, res) {
 });
 
 
-router.post('/mailCount', function (req, res) {
+router.get('/mailCount', function (req, res) {
     var uid = req.param("uid");
-    userDB.getEmailCount(uid, function (err, recordSet) {
+    var lastId = req.param("lastId") || 0;
+    userDB.getEmailCount(uid, lastId, function (err, recordSet) {
         if (!err) {
-            var result = null;
+            var result = [];
             if (recordSet.length > 0) {
-                result = recordSet[0];
-            } else {
-                result = {};
+                for (var i=0;i<recordSet.length;i++) {
+                    result[i] = recordSet[i];
+                }
             }
             res.status(200).json({result: true, data: result});
         } else {

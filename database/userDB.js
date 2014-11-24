@@ -20,11 +20,13 @@ userDB.getFavCount = function (uid, callback) {
     database.query('', callback);
 };
 
-userDB.getEmailCount = function (uid, callback) {
-    database.query('select max(mail_id) as mailId, count(mail_id) as mailCount from mail_queue' +
-        ' where DATEADD(dd, 0, DATEDIFF(dd, 0, create_time)) <= DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE())) and owner_id = \'' +
+userDB.getEmailCount = function (uid, lastId, callback) {
+    var query = 'select mail_id as mailId, text_content as mailContent, subject as mailTitle from mail_queue' +
+        ' where DATEADD(dd, 0, DATEDIFF(dd, 0, create_time)) = DATEADD(dd, 0, DATEDIFF(dd, 0, GETDATE())) and mail_to = (select email from participant where participant_id = \'' +
         uid
-        + '\' group by create_time', callback);
+        + '\') and mail_id > ' + lastId + ' order by create_time desc';
+    console.log(query);
+    database.query(query, callback);
 };
 
 userDB.getUserInfoById = function (uid, callback) {

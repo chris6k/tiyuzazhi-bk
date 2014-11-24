@@ -105,7 +105,7 @@ var buildSearchQuery = function (keywords, hasPrefix) {
 }
 
 magazineDB.notice = function (callback) {
-    var sql = 'select id, title from news order by createDate desc';
+    var sql = 'select id, title, content as summary from news order by createDate desc';
     database.query(sql, callback);
 }
 

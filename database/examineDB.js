@@ -43,9 +43,9 @@ examineDB.getAllEditorArts = function (uid, flowid, offset, isAsc, callback) {
         " c.manu_id from manuscript c, manuflow d where c.currentflow_actual_date is null " +
         "and c.flow_id = d.flow_id and a.manu_number is not null and a.manu_number != '' and (d.handler_id=" + uid + " or d.handler_id in (select user_key from user_in_group where group_id in (select group_id from user_in_group where user_key=" + uid + ")))";
     if (flowid) query += " and c.phase_id = " + flowid;
-    query = query + " order by c.currentflow_submit_date " + (isAsc == 0 ? " desc " : " asc ") + ") and (a.flow_id = b.flow_id and a.manu_number is not null and a.manu_number != '' and a.currentflow_actual_date is null and (b.handler_id=" + uid + " or b.handler_id in (select user_key from user_in_group where group_id in (select group_id from user_in_group where user_key=" + uid + ")))";
+    query = query + " order by c.submit_date " + (isAsc == 0 ? " desc " : " asc ") + ") and (a.flow_id = b.flow_id and a.manu_number is not null and a.manu_number != '' and a.currentflow_actual_date is null and (b.handler_id=" + uid + " or b.handler_id in (select user_key from user_in_group where group_id in (select group_id from user_in_group where user_key=" + uid + ")))";
     if (flowid) query += " and a.phase_id = " + flowid;
-    query += ") order by examineStart";
+    query += ") order by submitDate";
     if (isAsc == 0)
         query += " desc ";
     console.log(query);
