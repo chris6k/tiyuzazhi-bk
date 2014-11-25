@@ -40,10 +40,10 @@ examineDB.getAllEditorArts = function (uid, flowid, offset, isAsc, callback) {
         "b.opinion_modified as comment, b.handler_id as opId, b.score as score," +
         "(select top 1 f.participant_name from manuflow e, participant f where e.handler_id = f.participant_id and e.manu_id = a.manu_id and e.flow_id < a.flow_id order by e.flow_id desc) as prevOpName, a.currentflow_submit_date as prevExamineFinish" +
         " from manuscript a, manuflow b where a.manu_id not in (select top " + offset +
-        " c.manu_id from manuscript c, manuflow d where c.currentflow_actual_date is null " +
-        "and c.flow_id = d.flow_id and a.manu_number is not null and a.manu_number != '' and (d.handler_id=" + uid + " or d.handler_id in (select user_key from user_in_group where group_id in (select group_id from user_in_group where user_key=" + uid + ")))";
+        " c.manu_id from manuscript c, manuflow d where " +
+        " c.flow_id = d.flow_id and a.manu_number is not null and (d.handler_id=" + uid + " or d.handler_id in (select user_key from user_in_group where group_id in (select group_id from user_in_group where user_key=" + uid + ")))";
     if (flowid) query += " and c.phase_id = " + flowid;
-    query = query + " order by c.submit_date " + (isAsc == 0 ? " desc " : " asc ") + ") and (a.flow_id = b.flow_id and a.manu_number is not null and a.manu_number != '' and a.currentflow_actual_date is null and (b.handler_id=" + uid + " or b.handler_id in (select user_key from user_in_group where group_id in (select group_id from user_in_group where user_key=" + uid + ")))";
+    query = query + " order by c.submit_date " + (isAsc == 0 ? " desc " : " asc ") + ") and (a.flow_id = b.flow_id and a.manu_number is not null and (b.handler_id=" + uid + " or b.handler_id in (select user_key from user_in_group where group_id in (select group_id from user_in_group where user_key=" + uid + ")))";
     if (flowid) query += " and a.phase_id = " + flowid;
     query += ") order by submitDate";
     if (isAsc == 0)
