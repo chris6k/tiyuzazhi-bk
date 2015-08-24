@@ -255,7 +255,7 @@ examineDB.getByUid = function (uid, callback) {
         "a.currentflow_submit_date as examineStart," +
         "a.currentflow_actual_date as examineFinish," +
         "a.currentflow_plan_date as examineEnd, a.review_status as state," +
-        "a.currentflow_handler_name as opName, a.manu_type_id as category," +
+        "'' as opName, a.manu_type_id as category," +
         "a.phase_id as step, b.opinion_modified as comment, b.handler_id as opId, b.score as score" +
         " from manuscript a, manuflow b, manuscript_authors c " +
         " where a.flow_id = b.flow_id and a.manu_id = c.manu_id and c.person_key = " + uid +

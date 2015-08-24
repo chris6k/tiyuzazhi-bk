@@ -33,6 +33,6 @@ var validator = function (req, res, next) {
 };
 
 var error = function (res, statusCode, msg) {
-    res.status(400).json(new result(false, null, msg));
+    res.status(400).json(result(false, null, msg));
 };
 module.exports = validator;

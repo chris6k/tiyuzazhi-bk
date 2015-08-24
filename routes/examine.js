@@ -19,14 +19,14 @@ router.get("/examArts", function (req, res) {
     examineDB.getAllEditorArts(uid, flowId, offset, isAsc, function (err, recordSet) {
         if (err) {
             console.error(err);
-            res.status(200).json(new result(false, null, "get data err!"));
+            res.status(200).json(result(false, null, "get data err!"));
         } else {
             try {
                 var data = [];
                 for (var i = 0; i < recordSet.length; i++) {
                     data[i] = recordSet[i];
                 }
-                res.status(200).json(new result(true, data, null));
+                res.status(200).json(result(true, data, null));
             } catch (e) {
                 console.error(e);
             }
@@ -42,14 +42,14 @@ router.get("/examHist", function (req, res) {
     examineDB.examHistory(aid, function (err, recordSet) {
         if (err) {
             console.error(err);
-            res.status(200).json(new result(false, null, "get data err!"));
+            res.status(200).json(result(false, null, "get data err!"));
         } else {
             try {
                 var data = [];
                 for (var i = 0; i < recordSet.length; i++) {
                     data[i] = recordSet[i];
                 }
-                res.status(200).json(new result(true, data, null));
+                res.status(200).json(result(true, data, null));
             } catch (e) {
                 console.error(e);
             }
@@ -68,13 +68,13 @@ router.post("/examine", function (req, res) {
     var exam = req.param("status");
     examineDB.examine(aid, uid, exam, msg, function (err, recordSet) {
         if (err) {
-            res.status(200).json(new result(false, null, "exmaine failed!"));
+            res.status(200).json(result(false, null, "exmaine failed!"));
         } else {
             var data = [];
             for (var i = 0; i < recordSet.length; i++) {
                 data[i] = recordSet[i];
             }
-            res.status(200).json(new result(true, data, ""));
+            res.status(200).json(result(true, data, ""));
         }
     });
 });
@@ -87,13 +87,13 @@ router.get("/examiner", role_validator, function (req, res) {
     var uid = req.param("uid");
     examineDB.getExaminerList(uid, function (err, recordSet) {
         if (err) {
-            res.status(200).json(new result(false, null, "get examiner info failed"));
+            res.status(200).json(result(false, null, "get examiner info failed"));
         } else {
             var data = [];
             for (var i = 0; i < recordSet.length; i++) {
                 data[i] = recordSet[i];
             }
-            res.status(200).json(new result(true, data, ""));
+            res.status(200).json(result(true, data, ""));
         }
     });
 });
@@ -112,9 +112,9 @@ router.get("/forward", function (req, res) {
             });
         }], function (err, result) {
         if (err) {
-            res.status(200).json(new result(false, null, "forward failed"));
+            res.status(200).json(result(false, null, "forward failed"));
         } else {
-            res.status(200).json(new result(true, null, null));
+            res.status(200).json(result(true, null, null));
         }
     });
 
@@ -124,21 +124,23 @@ router.get("/forward", function (req, res) {
  * 获取某篇文章的审稿记录
  */
 router.get("/history", function (req, res) {
-    var uid = req.param("uid");
+    // var uid = req.param("uid");
     var aid = req.param("articleId");
     examineDB.examHistory(aid, function (err, recordSet) {
         if (err) {
-            res.status(200).json(new result(false, null, "get history failed"));
+            res.status(200).json(result(false, null, "get history failed"));
         } else {
             var data = [];
             for (var i = 0; i < recordSet.length; i++) {
                 data[i] = recordSet[i];
             }
-            res.status(200).json(new result(true, data, ""));
+            res.status(200).json(result(true, data, ""));
         }
     });
 });
 
+
+var patch = [6,8,10,11];
 /**
  * 读取文章信息
  */
@@ -156,10 +158,20 @@ router.get("/get", function (req, res) {
     try {
         exec(id, function (err, recordSet) {
             if (err) {
-                res.status(200).json(new result(false, null, "get article failed"));
+                res.status(200).json(result(false, null, "get article failed"));
             } else {
                 var data = recordSet.length > 0 ? recordSet[0] : {};
-                res.status(200).json(new result(true, data, ""));
+                //patch
+                if (data.step) {
+                    for (var i = 0; i < patch.length; i++) {
+                        if (data.step === patch[i]) {
+                            res.status(200).json(result(true, data, ""));
+                            return;
+                        }
+                    }
+                    data.step = 0;
+                }
+                res.status(200).json(result(true, data, ""));
             }
         });
     } catch (e) {

@@ -16,13 +16,13 @@ router.post('/login', function (req, res) {
             var data = null;
             if (recordSet.length > 0) {
                 data = recordSet[0];
-                res.status(200).json(new result(true, data, ""));
+                res.status(200).json(result(true, data, ""));
             } else {
-                res.status(200).json(new result(false, data, "未找到用户"));
+                res.status(200).json(result(false, data, "未找到用户"));
             }
         } else {
             console.error(err);
-            res.status(200).json(new result(false, null, "登录时发生异常"));
+            res.status(200).json(result(false, null, "登录时发生异常"));
         }
     });
 });
@@ -33,11 +33,11 @@ router.post("/register", function (req, res) {
     userDB.register(username, password, function (err, recordSet) {
         if (!err) {
             userDB.getUserInfo(username, password, function (err, recordSet) {
-                res.status(200).json(new result(true, null, null));
+                res.status(200).json(result(true, null, null));
             });
         } else {
             console.error(err);
-            res.status(200).json(new result(false, null, "注册用户失败"))
+            res.status(200).json(result(false, null, "注册用户失败"))
         }
     });
 });
@@ -50,10 +50,10 @@ router.post("/update", function (req, res) {
     var tel = req.param("tel");
     userDB.update(uid, name, email, company, tel, function (err, recordSet) {
         if (!err) {
-            res.status(200).json(new result(true, null, null));
+            res.status(200).json(result(true, null, null));
         } else {
             console.error(err);
-            res.status(200).json(new result(false, null, "更新用户信息失败"));
+            res.status(200).json(result(false, null, "更新用户信息失败"));
         }
     });
 });
@@ -72,10 +72,10 @@ router.get('/todo', function (req, res) {
                 data.ceditor = recordSet[2].editor_todo;
                 data.author = recordSet[3].editor_todo;
             }
-            res.status(200).json(new result(true, data, null));
+            res.status(200).json(result(true, data, null));
         } else {
             console.error(err);
-            res.status(200).json(new result(false, null, null));
+            res.status(200).json(result(false, null, null));
         }
     });
 });
